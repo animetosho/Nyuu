@@ -365,7 +365,8 @@ var optMap = {
 	from: {
 		type: 'string',
 		alias: 'f',
-		map: 'postHeaders/From'
+		map: 'postHeaders/From',
+		fn: articleHeaderFn
 	},
 	groups: {
 		type: 'string',
