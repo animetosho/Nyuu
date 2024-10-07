@@ -511,6 +511,8 @@ Input Files:
                              directory traversal (if `--subdirs=keep` is
                              specified). By default, all symlinks are followed.
                              This option takes no values.
+       --include-empty       If specified, 0-byte files will not be skipped.
+                             This option takes no values.
 
   Alternatively, a list of files can be supplied, with the following options:
 

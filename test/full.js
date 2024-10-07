@@ -483,7 +483,10 @@ describe('Nyuu', function() {
 });
 
 it('complex test', function(done) {
-	doTest(['lib/', 'help.txt'], {
+	doTest(['lib/', 'help.txt', {
+		name: 'emptyfile',
+		size: 0
+	}], {
 		__server: {ssl: true},
 		server: {
 			postConnections: 3,
@@ -499,11 +502,12 @@ it('complex test', function(done) {
 		useLazyConnect: true,
 		articleSize: 4096,
 		diskReqSize: 8192,
-		diskBufSize: 8192
+		diskBufSize: 8192,
+		processEmptyFiles: true
 	}, function(err, server) {
 		if(err) return done(err);
 		// TODO: better checks
-		var numFiles = require('fs').readdirSync('lib/').length +1;
+		var numFiles = require('fs').readdirSync('lib/').length +2;
 		assert(Object.keys(server.posts.rifles).length >= numFiles);
 		assert(Object.keys(server.postIdMap).length >= numFiles);
 		done(err);

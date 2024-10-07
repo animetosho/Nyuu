@@ -548,6 +548,10 @@ var optMap = {
 		alias: 'L',
 		map: 'skipSymlinks'
 	},
+	'include-empty': {
+		type: 'bool',
+		map: 'processEmptyFiles'
+	},
 	'input-file': {
 		type: 'array',
 		alias: 'i'
@@ -1349,7 +1353,7 @@ var filesToUpload = argv._;
 	
 	var fuploader = Nyuu.upload(filesToUpload.map(function(file) {
 		// TODO: consider supporting deferred filesize gathering?
-		var m = file.match(/^procjson:\/\/(.+?,.+?,.+)$/i);
+		var m = file.match(/^procjson:\/\/(.+?,.+?,.*)$/i);
 		if(m) {
 			if(m[1].substring(0, 1) != '[')
 				m[1] = '[' + m[1] + ']';
@@ -1365,8 +1369,8 @@ var filesToUpload = argv._;
 					return processStart('Input', cmd, {stdio: ['ignore','pipe','ignore']}).stdout;
 				}.bind(null, m[2])
 			};
-			if(!ret.size)
-				error('Invalid size specified for process input: ' + file);
+			if(!ret.size && !m[2])
+				ret.stream = null; // if empty file and no command given, don't assign a stream
 			if(argv['preload-modules']) {
 				require('../cli/procman');
 				require('../lib/streamreader');
@@ -1432,7 +1436,7 @@ var filesToUpload = argv._;
 		for(var filename in files) {
 			var sz = files[filename].size;
 			totalSize += sz;
-			totalPieces += Math.ceil(sz / ulOpts.articleSize);
+			totalPieces += Math.max(1, Math.ceil(sz / ulOpts.articleSize));
 			totalFiles++;
 		}
 		if(argv['input-raw-posts']) {

@@ -178,6 +178,7 @@ articleQueueBuffer: null, // number of buffered articles; default is min(round(n
 /** Other Options **/
 subdirs: 'include', // can be 'skip', 'include' or 'keep'; note that it affects directly passed directories too
 skipSymlinks: false, // ignore all symlinks
+processEmptyFiles: false, // don't skip 0 byte files
 // filenames will be transformed according to the following setting, which is a function that will have the file's path and name passed to it
 // the default is to keep the filename component only, which essentially flattens all files into a single directory
 // this is similar to how other clients handle folders
