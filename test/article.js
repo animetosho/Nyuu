@@ -99,6 +99,23 @@ it('basic (large) pooled post test', function(done) {
 	done();
 });
 
+it('empty file test', function(done) {
+	var a = new MultiEncoder('file', 0, 1);
+	assert.equal(a.parts, 1);
+	assert.equal(a.size, 0);
+	a.setHeaders({});
+	var a1 = a.generate(toBuffer(''));
+	
+	assert.equal(a1.part, 1);
+	assert.equal(a1.inputLen, 0);
+	var postData = a1.data.toString();
+	assert.notEqual(postData.indexOf(' crc32=00000000'), -1);
+	assert.notEqual(postData.indexOf(' pcrc32=00000000'), -1);
+	assert.notEqual(postData.indexOf(' size=0 '), -1);
+	
+	done();
+});
+
 it('should throw if sent too many parts', function(done) {
 	var a = new MultiEncoder('file', 6, 6);
 	a.setHeaders({});
