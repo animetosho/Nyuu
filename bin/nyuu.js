@@ -631,7 +631,8 @@ var optMap = {
 		alias: 'E'
 	},
 	'copy-input': {
-		type: 'string'
+		type: 'string',
+		alias: 'I'
 	},
 	'copy-include': {
 		type: 'string'

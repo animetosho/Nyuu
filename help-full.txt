@@ -569,7 +569,7 @@ Input Files:
                              For example, the following can be used to
                              generate a list of MD5 hashes of the input files,
                              on Linux, without re-reading files off disk:
-                               `--I "proc://echo `md5sum|sed s/-//` {filename} >>md5list`
+                               `-I 'proc://echo `md5sum|sed s/-//` {filename} >>md5list'`
                              WARNING: {filename} isn't sanitized in any way, so
                              take care when using it, especially when using it
                              in a command!
