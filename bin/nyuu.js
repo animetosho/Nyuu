@@ -820,6 +820,7 @@ if(argv.config || process.env.NYUU_CONFIG) {
 	else
 		error('Invalid config data supplied');
 	
+	var cliOpts;
 	if(cOpts.isFullConfig && confType == 'js') {
 		if(cOpts.servers) {
 			// for the default setup of one upload server, but multiple specified in custom config, duplicate the default setup for each custom server
@@ -839,17 +840,20 @@ if(argv.config || process.env.NYUU_CONFIG) {
 		util.deepMerge(ulOpts, cOpts);
 	} else {
 		// simple config format, just set unset CLI args
-		cOpts = arg_parser(cOpts, optMap);
-		
-		// allow --quiet or --verbose to override whatever is specified in the config, without error
-		if(argv.quiet || argv.verbose) {
-			delete cOpts.quiet;
-			delete cOpts.verbose;
-		}
-		for(var k in cOpts) {
-			if(!(k in argv) && k[0] != ' ')
-				argv[k] = cOpts[k];
-		}
+		util.deepMerge(ulOpts.cli, cOpts);
+	}
+}
+if(ulOpts.cli) {
+	var cOpts = arg_parser(ulOpts.cli, optMap);
+	
+	// allow --quiet or --verbose to override whatever is specified in the config, without error
+	if(argv.quiet || argv.verbose) {
+		delete cOpts.quiet;
+		delete cOpts.verbose;
+	}
+	for(var k in cOpts) {
+		if(!(k in argv) && k[0] != ' ')
+			argv[k] = cOpts[k];
 	}
 }
 
