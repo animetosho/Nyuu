@@ -12,30 +12,30 @@ jobs:
         - version: '0.10.40'
           flags: ''
           mocha: '3.5.3'
-          python2: true
+          python: '2.7'
         - version: '4.9.1'
           flags: ''
           mocha: '5.2.0'
-          python2: true
+          python: '2.7'
         - version: '8.17.0'
           flags: '--trace-warnings'
           mocha: '7.2.0'
-          python2: true
+          python: '2.7'
         - version: '12.22.12'
           flags: '--trace-warnings'
           mocha: '9.2.2'
-          python2: false
+          python: '3.9'
         - version: '20.5.0'
           flags: '--pending-deprecation --throw-deprecation --trace-warnings'
           mocha: '10.2.0'
-          python2: false
+          python: ''
     name: Test on Node v${{ matrix.version }}
     runs-on: ubuntu-latest
     steps:
       - uses: MatteoH2O1999/setup-python@v3
         with:
-          python-version: '2.7'
-        if: ${{ matrix.python2 }}
+          python-version: ${{ matrix.python }}
+        if: ${{ matrix.python != '' }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
