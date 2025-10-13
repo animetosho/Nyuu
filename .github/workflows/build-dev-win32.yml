@@ -5,7 +5,7 @@ on:
 jobs:
   build-dev-win32:
     name: Build x86 Windows binary
-    runs-on: windows-2019
+    runs-on: windows-2022
     env:
       BUILD_ARCH: x86
       BUILD_LOGLEVEL: verbose

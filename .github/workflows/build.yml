@@ -9,7 +9,7 @@ on:
 jobs:
   build-win32:
     name: Build x86 Windows binary
-    runs-on: windows-2019
+    runs-on: windows-2022
     env:
       BUILD_ARCH: x86
       BUILD_LOGLEVEL: verbose
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.2.3
+        uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
@@ -78,7 +78,7 @@ jobs:
         if: ${{ matrix.arch == 'arm' }}
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.2.3
+        uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
@@ -113,7 +113,7 @@ jobs:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error
       - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.2.3
+        uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
