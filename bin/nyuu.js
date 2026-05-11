@@ -48,6 +48,14 @@ var servOptMap = {
 		keyMap: 'tcpKeepAlive',
 		ifSetDefault: '30s'
 	},
+	ipv4: {
+		type: 'bool',
+		keyMap: 'connect/family',
+		fn: function(v) {
+			return v ? 4 : undefined;
+		},
+		alias: '4'
+	},
 	ipv6: {
 		type: 'bool',
 		keyMap: 'connect/family',
@@ -1124,6 +1132,8 @@ if(argv['out']) {
 
 if(argv.quiet && argv.verbose)
 	error('Cannot specify both `quiet` and `verbose`');
+if(argv.ipv4 && argv.ipv6)
+	error('Cannot specify both `ipv4` and `ipv6`');
 
 var verbosity = 3;
 if(argv['log-level'] || argv['log-level'] === 0)

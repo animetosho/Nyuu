@@ -18,6 +18,7 @@ Upload Server Options:
                              SSL with Unix sockets requires NodeJS >= 0.12
   -P,  --port                Port to connect to (default 119 or 563 if `--ssl`
                              is specified)
+  -4,  --ipv4                Force connect over IPv4 (flag option)
   -6,  --ipv6                Connect over IPv6 (flag option)
                              Requires NodeJS >= 0.12
        --bind-host           Local address to bind to
