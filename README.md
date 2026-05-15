@@ -12,7 +12,7 @@ more than any other usenet posting client in these aspects.
 Nyuu runs on top of node.js (which *everyone* knows is [bad ass rock star
 tech](https://www.youtube.com/watch?v=bzkRVzciAZg)) with minimal dependencies.
 It does require one compiled module,
-[yencode](https://animetosho.org/app/node-yencode), for ultra fast yEnc and
+[yencode](https://github.com/animetosho/node-yencode), for ultra fast yEnc and
 CRC32 calculation.
 
 Features
@@ -175,7 +175,7 @@ Alternatively, you can grab the dependencies manually: create a directory named
 
 For yencode, you’ll need to place it in the *node_modules* directory as well,
 then follow [the installation
-instructions](https://animetosho.org/app/node-yencode).
+instructions](https://github.com/animetosho/node-yencode).
 
 At the end, the folder structure should resemble something like (not all files
 shown):
@@ -303,7 +303,7 @@ specify this file on every run, if you set the environment up in your shell).
 Planned Features
 ================
 
--   Integrate [ParPar](https://animetosho.org/app/parpar) for streaming PAR2
+-   Integrate [ParPar](https://github.com/animetosho/parpar) for streaming PAR2
     creation
 
 -   Streaming 7-Zip creation
