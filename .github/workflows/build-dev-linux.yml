@@ -43,8 +43,10 @@ jobs:
           sudo apt install -y libstdc++-$(c++ -dumpversion)-dev:i386 libc6-dev:i386 g++-multilib
         if: ${{ matrix.arch == 'arm' }}
       - run: npm install --production
-      - run: (cd nexe && npm install --production)
-      - run: (cd nexe && node build)
+      - run: npm install --production
+        working-directory: nexe
+      - run: node build
+        working-directory: nexe
         env:
           CC: ${{ steps.musl.outputs.path }}/${{ matrix.target }}-cc
           CXX: ${{ steps.musl.outputs.path }}/${{ matrix.target }}-c++

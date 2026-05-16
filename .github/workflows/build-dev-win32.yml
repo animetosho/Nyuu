@@ -16,8 +16,10 @@ jobs:
           python-version: '2.7'
       - uses: actions/checkout@v4
       - run: npm install --production
-      - run: (cd nexe && npm install --production)
-      - run: (cd nexe && node build)
+      - run: npm install --production
+        working-directory: nexe
+      - run: node build
+        working-directory: nexe
       - run: move nexe\nyuu.exe nyuu.exe && 7z a -t7z -mx=9 nyuu.7z config-sample.json nyuu.exe
       - uses: actions/upload-artifact@v3
         with:

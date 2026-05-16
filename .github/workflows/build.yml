@@ -25,10 +25,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
-      - run: (cd nexe && npm install --production)
-      - run: (cd nexe && node build)
+      - run: npm install --production
+        working-directory: nexe
+      - run: node build
+        working-directory: nexe
       - run: move nexe\nyuu.exe nyuu.exe && 7z a -t7z -mx=9 nyuu.7z config-sample.json nyuu.exe
-      - uses: actions/upload-release-asset@v1
+      - uses: sekwah41/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -82,8 +84,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
-      - run: (cd nexe && npm install --production)
-      - run: (cd nexe && node build)
+      - run: npm install --production
+        working-directory: nexe
+      - run: node build
+        working-directory: nexe
         env:
           CC: ${{ steps.musl.outputs.path }}/${{ matrix.target }}-cc
           CXX: ${{ steps.musl.outputs.path }}/${{ matrix.target }}-c++
@@ -91,7 +95,7 @@ jobs:
           CXX_host: c++
       - run: ${{ steps.musl.outputs.path }}/${{ matrix.target }}-strip nexe/nyuu
       - run: tar --group=nobody --owner=nobody -cf - -C nexe nyuu ../config-sample.json | xz -9e ${{ matrix.xz_bcj }} --lzma2 > nyuu.txz
-      - uses: actions/upload-release-asset@v1
+      - uses: sekwah41/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -129,7 +133,7 @@ jobs:
         working-directory: nexe
       - run: strip nexe/nyuu
       - run: mv nexe/nyuu . && tar --uname '' --gname '' --options='compression-level=9' -Jcf nyuu.txz nyuu config-sample.json
-      - uses: actions/upload-release-asset@v1
+      - uses: sekwah41/upload-release-assets@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
