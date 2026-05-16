@@ -14,7 +14,7 @@ jobs:
       - uses: MatteoH2O1999/setup-python@v3 # https://github.com/actions/setup-python/issues/672
         with:
           python-version: '2.7'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: npm install --production
       - run: (cd nexe && npm install --production)
       - run: (cd nexe && node build)

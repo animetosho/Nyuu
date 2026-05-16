@@ -28,7 +28,7 @@ jobs:
       BUILD_LOGLEVEL: verbose
       BUILD_CONFIGURE: '--with-arm-float-abi=hard --with-arm-fpu=vfpv3-d16'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error

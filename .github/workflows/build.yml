@@ -18,7 +18,7 @@ jobs:
       - uses: MatteoH2O1999/setup-python@v3
         with:
           python-version: '2.7'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -62,7 +62,7 @@ jobs:
       BUILD_LOGLEVEL: verbose
       BUILD_CONFIGURE: '--with-arm-float-abi=hard --with-arm-fpu=vfpv3-d16'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error
@@ -101,13 +101,19 @@ jobs:
           asset_content_type: application/octet-stream
 
   build-mac:
-    name: Build x64 MacOS binary
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        m:
+          - { os: macos-13, arch: x64 }
+          - { os: macos-14, arch: arm64 }
+    name: Build ${{ matrix.m.arch }} MacOS binary
+    runs-on: ${{ matrix.m.os }}
     env:
-      BUILD_ARCH: x64
+      BUILD_ARCH: ${{ matrix.m.arch }}
       BUILD_LOGLEVEL: verbose
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error
@@ -117,8 +123,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --production
-      - run: (cd nexe && npm install --production)
-      - run: (cd nexe && node build)
+      - run: npm install --production
+        working-directory: nexe
+      - run: node build
+        working-directory: nexe
       - run: strip nexe/nyuu
       - run: mv nexe/nyuu . && tar --uname '' --gname '' --options='compression-level=9' -Jcf nyuu.txz nyuu config-sample.json
       - uses: actions/upload-release-asset@v1

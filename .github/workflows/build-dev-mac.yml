@@ -10,7 +10,7 @@ jobs:
       BUILD_ARCH: x64
       BUILD_LOGLEVEL: verbose
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error

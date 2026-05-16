@@ -145,6 +145,15 @@ nexe.compile({
 			return next();
 		},
 		
+		// Xcode 15+ (Clang 15+) promotes -Wenum-constexpr-conversion to an error, breaking V8 in Node 12
+		async (compiler, next) => {
+			if(buildOs == 'darwin' || buildOs == 'mac') {
+				// '-Wenum-constexpr-conversion' available in Clang 16, not in 15, but doesn't error there
+				// not recognised by GCC, but it doesn't mind unknown '-Wno-*' flags
+				await compiler.replaceInFileAsync('common.gypi', /'WARNING_CFLAGS': \[(\s*'-Wno-enum-constexpr-conversion',)?/, "'WARNING_CFLAGS': [ '-Wno-enum-constexpr-conversion',");
+			}
+			return next();
+		},
 		
 		// add yencode into source list
 		async (compiler, next) => {
