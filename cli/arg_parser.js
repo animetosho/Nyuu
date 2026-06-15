@@ -415,7 +415,7 @@ var parseObject = function(config, opts) {
 	// handle defaults
 	for(var k in opts) {
 		var o = opts[k];
-		if(o.default && !(k in ret))
+		if(o.default !== undefined && !(k in ret))
 			ret[k] = o.default;
 	}
 	
