@@ -425,3 +425,4 @@ var parseObject = function(config, opts) {
 // export some useful parsing functions
 module.exports.parseSize = parseSize;
 module.exports.parseTime = parseTime;
+module.exports.parseObject = parseObject;
