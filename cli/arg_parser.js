@@ -307,19 +307,21 @@ var parseObject = function(config, opts) {
 		// pre-conversion for strings
 		if(typeof v === 'string') {
 			switch(opt.type) {
-				case 'bool':
-					switch(v.toLowerCase()) {
-						case 'true':
-						case '1':
-							v = true;
-							break;
-						case 'false':
-						case '0':
-						case '':
-							v = false;
-							break;
-					}
-					throw new Error('Invalid value specified for `' + k + '`');
+			case 'bool':
+				switch(v.toLowerCase()) {
+					case 'true':
+					case '1':
+						v = true;
+						break;
+					case 'false':
+					case '0':
+					case '':
+						v = false;
+						break;
+					default:
+						throw new Error('Invalid value specified for `' + k + '`');
+				}
+				break;
 				
 				case '-int':
 				case 'int':
