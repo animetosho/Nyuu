@@ -11,7 +11,7 @@ module.exports.prototype = {
 		this.samples.push(num);
 		var len = this.samples.length;
 		if(len > this.size
-		|| (this.maxNum && len > 2 && this.samples[len-1] - this.samples[1] >= maxNum))
+		|| (this.maxNum && len > 2 && this.samples[len-1] - this.samples[1] >= this.maxNum))
 			this.samples.shift();
 	},
 	count: function() {
