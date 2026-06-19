@@ -80,3 +80,26 @@ var target = path.join(process.env.TMP || process.env.TEMP || '.', 'fwstream');
 		
 	});
 });
+
+describe('DeferredWriteStream bytesWritten', function() {
+	it('should accumulate bytesWritten across write and end', function(done) {
+		try { fs.unlinkSync(target); } catch(x) {}
+		
+		var stream = fwstream.createDeferredWriteStream(target);
+		stream.on('open', function() {
+			stream.write('abc', function() {
+				assert.equal(stream.bytesWritten, 3);
+				stream.end('defg', function() {
+					assert.equal(stream.bytesWritten, 7);
+					setTimeout(function() {
+						fs.unlinkSync(target);
+						done();
+					}, 200);
+				});
+			});
+		});
+		stream.on('close', function() {
+			assert(fs.existsSync(target));
+		});
+	});
+});

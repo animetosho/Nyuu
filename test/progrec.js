@@ -45,6 +45,19 @@ it('should handle max size', function(done) {
 	done();
 });
 
+it('should evict samples when maxNum difference is exceeded', function(done) {
+	var q = new ProgressRecorder(10, 5);
+	q.add(0);
+	q.add(1);
+	q.add(2);
+	assert.equal(q.count(), 3);
+	q.add(10);
+	assert.equal(q.count(), 3);
+	assert.deepEqual(q.samples, [1, 2, 10]);
+	
+	done();
+});
+
 // TODO: more tests
 
 });
