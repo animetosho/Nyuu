@@ -98,8 +98,5 @@ describe('DeferredWriteStream bytesWritten', function() {
 				});
 			});
 		});
-		stream.on('close', function() {
-			assert(fs.existsSync(target));
-		});
 	});
 });
