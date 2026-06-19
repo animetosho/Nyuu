@@ -176,7 +176,7 @@ nexe.compile({
 			if(parseFloat(nodeVer) >= 12) {
 				// avoid nexe's methods to prevent double-writing this to node.gyp
 				const loaderFile = path.join(compiler.src, 'lib/internal/bootstrap/loaders.js');
-				data = fs.readFileSync(loaderFile).toString();
+				let data = fs.readFileSync(loaderFile).toString();
 				data = data.replace(/('async_wrap',)( 'yencode',)?/, "$1 'yencode',");
 				fs.writeFileSync(loaderFile, data);
 			}
