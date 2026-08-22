@@ -12,18 +12,15 @@ jobs:
           arch: x64
           xz_bcj: --x86
           name: amd64
-          prefix: x86_64-linux-musl
-        - target: arm_64
+        - target: aarch64
           arch: arm64
           xz_bcj: 
           name: aarch64
-          prefix: aarch64-linux-musl
         # disabled due to compiler crashing
-        #- target: arm_hf
+        #- target: arm
         #  arch: arm
         #  xz_bcj: --arm
         #  name: armhf
-        #  prefix: arm-linux-musleabihf
     name: Build ${{ matrix.name }} dev Linux binary
     runs-on: ubuntu-latest
     env:
@@ -35,10 +32,10 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error
-      - uses: dyne/musl-action@main
+      - uses: arceos-org/setup-musl@v1.0.3
         id: musl
         with:
-          target_arch: ${{ matrix.target }}
+          arch: ${{ matrix.target }}
       - name: Install i386 dev
         run: |
           sudo dpkg --add-architecture i386
@@ -51,11 +48,11 @@ jobs:
       - run: node build
         working-directory: nexe
         env:
-          CC: ${{ matrix.prefix }}-cc
-          CXX: ${{ matrix.prefix }}-c++
+          CC: ${{ steps.musl.outputs.cross_compile }}-cc
+          CXX: ${{ steps.musl.outputs.cross_compile }}-c++
           CC_host: cc
           CXX_host: c++
-      - run: ${{ matrix.prefix }}-strip nexe/nyuu
+      - run: ${{ steps.musl.outputs.cross_compile }}-strip nexe/nyuu
       - run: tar --group=nobody --owner=nobody -cf - -C nexe nyuu ../config-sample.json | xz -9e ${{ matrix.xz_bcj }} --lzma2 > nyuu.txz
       - uses: actions/upload-artifact@v4
         with:

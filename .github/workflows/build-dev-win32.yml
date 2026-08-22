@@ -16,7 +16,7 @@ jobs:
           python-version: '2.7'
       - uses: actions/checkout@v4
       # node-gyp supplied by Win2025 image fails to detect VS2026 - so force update it
-      - run: npm install --global node-gyp
+      - run: npm install --global npm
       - run: npm install --omit=dev --no-ignore-scripts
       - run: npm install --omit=dev
         working-directory: nexe

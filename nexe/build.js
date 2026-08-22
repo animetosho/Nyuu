@@ -283,6 +283,13 @@ goto msbuild-found
 			return next();
 		},
 		
+		// fix build on musl toolchains
+		async (compiler, next) => {
+			// NodeJS has removed this option by default in later versions: https://github.com/nodejs/node/pull/62667
+			await compiler.replaceInFileAsync('common.gypi', / -fuse-linker-plugin /g, " ");
+			return next();
+		},
+		
 		// add yencode into source list
 		async (compiler, next) => {
 			var bindingsFile;
