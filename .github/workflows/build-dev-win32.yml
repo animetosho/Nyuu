@@ -15,8 +15,8 @@ jobs:
         with:
           python-version: '2.7'
       - uses: actions/checkout@v4
-      - run: npm install --production
-      - run: npm install --production
+      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev --no-ignore-scripts
         working-directory: nexe
       - run: node build
         working-directory: nexe
