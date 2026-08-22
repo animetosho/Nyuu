@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.9' # workaround "cannot import name 'Mapping' from 'collections'" error
       - run: npm install --omit=dev --no-ignore-scripts
-      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev
         working-directory: nexe
       - run: node build
         working-directory: nexe
