@@ -21,7 +21,7 @@ jobs:
       - run: node build
         working-directory: nexe
       - run: move nexe\nyuu.exe nyuu.exe && 7z a -t7z -mx=9 nyuu.7z config-sample.json nyuu.exe
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./nyuu.7z
           name: nyuu-${{ github.ref_name }}-win32.7z

@@ -21,7 +21,7 @@ jobs:
         working-directory: nexe
       - run: strip nexe/nyuu
       - run: mv nexe/nyuu . && tar --uname '' --gname '' --options='compression-level=9' -Jcf nyuu.txz nyuu config-sample.json
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./nyuu.txz
           name: nyuu-${{ github.ref_name }}-macos-x64.7z

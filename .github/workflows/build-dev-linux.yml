@@ -54,7 +54,7 @@ jobs:
           CXX_host: c++
       - run: ${{ steps.musl.outputs.cross_compile }}-strip nexe/nyuu
       - run: tar --group=nobody --owner=nobody -cf - -C nexe nyuu ../config-sample.json | xz -9e ${{ matrix.xz_bcj }} --lzma2 > nyuu.txz
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./nyuu.txz
           name: nyuu-${{ github.ref_name }}-linux-${{ matrix.name }}.7z
