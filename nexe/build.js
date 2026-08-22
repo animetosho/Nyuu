@@ -155,6 +155,134 @@ nexe.compile({
 			return next();
 		},
 		
+		// add support for newer Visual Studio if missing
+		async (compiler, next) => {
+			if(buildOs == 'win32') {
+				let data = await compiler.readFileAsync('tools/gyp/pylib/gyp/MSVSVersion.py');
+				data = data.contents.toString();
+				
+				// reference: https://github.com/nodejs/node/commit/b6dda31cadd45fa43d91fbfc50ee8bc1cd495a20
+				data = data.replace(/( versions = \{\s+)(['"]2019['"])/, "$1" + `
+        "2022": VisualStudioVersion(
+            "2022",
+            "Visual Studio 2022",
+            solution_version="12.00",
+            project_version="17.0",
+            flat_sln=False,
+            uses_vcxproj=True,
+            path=path,
+            sdk_based=sdk_based,
+            default_toolset="v143",
+            compatible_sdks=["v8.1", "v10.0"],
+        ),
+				` + "$2");
+				data = data.replace(/( versions = \{\s+)(['"]2022['"])/, "$1" + `
+        "2026": VisualStudioVersion(
+            "2026",
+            "Visual Studio 2026",
+            solution_version="12.00",
+            project_version="18.0",
+            flat_sln=False,
+            uses_vcxproj=True,
+            path=path,
+            sdk_based=sdk_based,
+            default_toolset="v145",
+            compatible_sdks=["v8.1", "v10.0"],
+        ),
+				` + "$2");
+				data = data.replace(/(['"]16\.0['"]: ['"]2019['"],)(\s+\})/, '$1 "17.0": "2022",$2');
+				data = data.replace(/(['"]17\.0['"]: ['"]2022['"],)(\s+\})/, '$1 "18.0": "2026",$2');
+				data = data.replace(/(['"]auto['"]: \(\s*)(['"]16\.0['"],)/, '$1"17.0", $2');
+				data = data.replace(/(['"]auto['"]: \(\s*)(['"]17\.0['"],)/, '$1"18.0", $2');
+				data = data.replace(/(['"]2019['"]: \(['"]16.0['"],\),)(\s+\})/, '$1 "2022": ("17.0",),$2');
+				data = data.replace(/(['"]2022['"]: \(['"]17.0['"],\),)(\s+\})/, '$1 "2026": ("18.0",),$2');
+				
+				await compiler.setFileContentsAsync('tools/gyp/pylib/gyp/MSVSVersion.py', data);
+				
+				// ref https://github.com/nodejs/node/commit/934d90735ae36bc1bd362bf28f901d7b68c1176e
+				data = await compiler.readFileAsync('vcbuild.bat');
+				data = data.contents.toString();
+				// the ordering of checks has flipped since Node 12, but we'll try to fudge it
+				// vswhere_usability_wrapper.cmd has also changed, though the new params probably don't need to be there
+				if(data.indexOf('@rem Look for Visual Studio 2022') < 0) {
+					data = data.replace(/(@rem Look for Visual Studio 201[79])/, `
+@rem Look for Visual Studio 2022
+:vs-set-2022
+if defined target_env if "%target_env%" NEQ "vs2022" goto vs-set-2019
+echo Looking for Visual Studio 2022
+@rem VCINSTALLDIR may be set if run from a VS Command Prompt and needs to be
+@rem cleared first as vswhere_usability_wrapper.cmd doesn't when it fails to
+@rem detect the version searched for
+if not defined target_env set "VCINSTALLDIR="
+call tools\\msvs\\vswhere_usability_wrapper.cmd "[17.6,18.0)" %target_arch% "prerelease" %clang_cl%
+if "_%VCINSTALLDIR%_" == "__" goto vs-set-2019
+@rem check if VS2022 is already setup, and for the requested arch
+if "_%VisualStudioVersion%_" == "_17.0_" if "_%VSCMD_ARG_TGT_ARCH%_"=="_%target_arch%_" goto found_vs2022
+@rem need to clear VSINSTALLDIR for vcvarsall to work as expected
+set "VSINSTALLDIR="
+@rem prevent VsDevCmd.bat from changing the current working directory
+set "VSCMD_START_DIR=%CD%"
+set vcvars_call="%VCINSTALLDIR%\\Auxiliary\\Build\\vcvarsall.bat" %vcvarsall_arg%
+echo calling: %vcvars_call%
+call %vcvars_call%
+if errorlevel 1 goto msbuild-not-found
+if defined DEBUG_HELPER @ECHO ON
+:found_vs2022
+echo Found MSVS version %VisualStudioVersion%
+set GYP_MSVS_VERSION=2022
+set PLATFORM_TOOLSET=v143
+goto msbuild-found
+					`+"$1");
+				}
+				if(data.indexOf('@rem Look for Visual Studio 2026') < 0) {
+					data = data.replace(/(@rem Look for Visual Studio 2022)/, `
+@rem Look for Visual Studio 2026
+:vs-set-2026
+if defined target_env if "%target_env%" NEQ "vs2026" goto vs-set-2022
+echo Looking for Visual Studio 2026
+@rem VCINSTALLDIR may be set if run from a VS Command Prompt and needs to be
+@rem cleared first as vswhere_usability_wrapper.cmd doesn't when it fails to
+@rem detect the version searched for
+if not defined target_env set "VCINSTALLDIR="
+call tools\\msvs\\vswhere_usability_wrapper.cmd "[18.0,19.0)" %target_arch% "prerelease" %clang_cl%
+if "_%VCINSTALLDIR%_" == "__" goto vs-set-2022
+@rem check if VS2026 is already setup, and for the requested arch
+if "_%VisualStudioVersion%_" == "_18.0_" if "_%VSCMD_ARG_TGT_ARCH%_"=="_%target_arch%_" goto found_vs2026
+@rem need to clear VSINSTALLDIR for vcvarsall to work as expected
+set "VSINSTALLDIR="
+@rem prevent VsDevCmd.bat from changing the current working directory
+set "VSCMD_START_DIR=%CD%"
+set vcvars_call="%VCINSTALLDIR%\\Auxiliary\\Build\\vcvarsall.bat" %vcvarsall_arg%
+echo calling: %vcvars_call%
+call %vcvars_call%
+if errorlevel 1 goto vs-set-2022
+if defined DEBUG_HELPER @ECHO ON
+:found_vs2026
+echo Found MSVS version %VisualStudioVersion%
+set GYP_MSVS_VERSION=2026
+set PLATFORM_TOOLSET=v145
+goto msbuild-found
+					`+"$1");
+				}
+				await compiler.setFileContentsAsync('vcbuild.bat', data);
+			}
+			return next();
+		},
+
+		// build fix for GCC 13: https://github.com/nodejs/node/commit/0be1c5728173ea9ac42843058e26b6268568acf0
+		async (compiler, next) => {
+			await compiler.replaceInFileAsync('deps/v8/src/inspector/v8-string-conversions.h', /(#include <cstdint>)?(\s*#include <string>)/, "\n#include <cstdint>$2");
+			await compiler.replaceInFileAsync('deps/v8/src/base/logging.h', /(#include <cstdint>)?(\s*#include <cstring>)/, "\n#include <cstdint>$2");
+			return next();
+		},
+		
+		// fix build failure on macOS
+		// this code seems to be unused, and was later removed [https://github.com/madler/zlib/commit/4bd9a71f3539b5ce47f0c67ab5e01f3196dc8ef9]
+		async (compiler, next) => {
+			await compiler.replaceInFileAsync('deps/zlib/zutil.h', /#\s*define fdopen\(fd,mode\) NULL/g, "");
+			return next();
+		},
+		
 		// add yencode into source list
 		async (compiler, next) => {
 			var bindingsFile;

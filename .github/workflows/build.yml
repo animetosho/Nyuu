@@ -9,7 +9,7 @@ on:
 jobs:
   build-win32:
     name: Build x86 Windows binary
-    runs-on: windows-2022
+    runs-on: windows-2025
     env:
       BUILD_ARCH: x86
       BUILD_LOGLEVEL: verbose
@@ -109,8 +109,8 @@ jobs:
       fail-fast: false
       matrix:
         m:
-          - { os: macos-13, arch: x64 }
-          - { os: macos-14, arch: arm64 }
+          - { os: macos-15-intel, arch: x64 }
+          - { os: macos-15, arch: arm64 }
     name: Build ${{ matrix.m.arch }} MacOS binary
     runs-on: ${{ matrix.m.os }}
     env:

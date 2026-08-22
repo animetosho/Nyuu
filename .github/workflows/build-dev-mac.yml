@@ -5,7 +5,7 @@ on:
 jobs:
   build-dev-mac:
     name: Build x64 MacOS binary
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     env:
       BUILD_ARCH: x64
       BUILD_LOGLEVEL: verbose
