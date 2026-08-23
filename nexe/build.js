@@ -49,6 +49,19 @@ let b = browserify(['../bin/nyuu.js'], {
 });
 
 
+// workaround child_process.spawn issue on Windows: https://nodejs.org/en/blog/vulnerability/april-2024-security-releases-2#command-injection-via-args-parameter-of-child_processspawn-without-shell-option-enabled-on-windows-cve-2024-27980---high
+if(os.platform() == 'win32') {
+	var cp = require('child_process');
+	var realSpawn = cp.spawn;
+	cp.spawn = function(cmd, args, opts) {
+		if(cmd == 'vcbuild.bat') {
+			opts.shell = true;
+			return realSpawn(cmd, args, opts);
+		} else
+			return realSpawn.apply(null, arguments);
+	};
+}
+
 // invoke nexe
 // --without-corepack
 var configureArgs = [staticness, '--without-dtrace', '--without-etw', '--without-npm', '--with-intl=none', '--without-report', '--without-node-options', '--without-inspector', '--without-siphash', '--dest-cpu=' + buildArch];

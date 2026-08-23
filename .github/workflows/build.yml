@@ -25,10 +25,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm install --global npm
-      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev --ignore-scripts
       - run: npm install --omit=dev
         working-directory: nexe
-      - run: node --security-revert=CVE-2024-27980 build
+      - run: node build
         working-directory: nexe
       - run: move nexe\nyuu.exe nyuu.exe && 7z a -t7z -mx=9 nyuu.7z config-sample.json nyuu.exe
       - uses: sekwah41/upload-release-assets@v1
@@ -84,7 +84,7 @@ jobs:
         uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev --ignore-scripts
       - run: npm install --omit=dev
         working-directory: nexe
       - run: node build
@@ -127,7 +127,7 @@ jobs:
         uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev --ignore-scripts
       - run: npm install --omit=dev
         working-directory: nexe
       - run: node build

@@ -17,10 +17,10 @@ jobs:
       - uses: actions/checkout@v4
       # node-gyp supplied by Win2025 image fails to detect VS2026 - so force update it
       - run: npm install --global npm
-      - run: npm install --omit=dev --no-ignore-scripts
+      - run: npm install --omit=dev --ignore-scripts
       - run: npm install --omit=dev
         working-directory: nexe
-      - run: node --security-revert=CVE-2024-27980 build
+      - run: node build
         working-directory: nexe
       - run: move nexe\nyuu.exe nyuu.exe && 7z a -t7z -mx=9 nyuu.7z config-sample.json nyuu.exe
       - uses: actions/upload-artifact@v4
