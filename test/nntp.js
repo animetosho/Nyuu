@@ -1231,6 +1231,79 @@ it('should resend request if connection lost before response received', function
 	});
 });
 
+[true, false].forEach(function(serverHasIt) {
+	it('should STAT before re-posting if connection drops out during upload (article ' + (serverHasIt ? 'accepted' : 'missing') + ')', function(done) {
+		var server, client;
+		waterfall([
+			setupTest.bind(null, {uploadChunkSize: 1, checkBeforeRepost: true}),
+			function(_server, _client, cb) {
+				server = _server;
+				client = _client;
+				client.connect(cb);
+			},
+			function(cb) {
+				assert.equal(client.state, 'connected');
+				
+				var msg = 'My-Secret: not telling\r\n\r\nNyuu breaks free again!\r\n.\r\n';
+				server.expect('POST\r\n', function() {
+					this.expect(msg, function() {
+						// article fully sent, drop before acknowledging it
+						server.expect('STAT <xxxx>\r\n', function() {
+							if(serverHasIt) {
+								// server has it: no second upload may follow
+								this.respond('223 0 <xxxx> article retrieved - request text separately');
+							} else {
+								this.expect('POST\r\n', function() {
+									this.expect(msg, '240 <new-article> Article received ok');
+									this.respond('340  Send article');
+								});
+								this.respond('430 No article with that message-id');
+							}
+						});
+						setTimeout(function() {
+							server.drop();
+						}, 30);
+					});
+					this.respond('340  Send article');
+				});
+				client.post(new DummyPost(msg), cb);
+			},
+			function(a, cb) {
+				assert.equal(a, serverHasIt ? 'xxxx' : 'new-article');
+				assert.equal(server.connCount, 2);
+				
+				closeTest(client, server, cb);
+			}
+		], done);
+	});
+});
+it('should not STAT if connection drops out before the article is sent', function(done) {
+	var server, client;
+	waterfall([
+		setupTest.bind(null, {checkBeforeRepost: true}),
+		function(_server, _client, cb) {
+			server = _server;
+			client = _client;
+			client.connect(cb);
+		},
+		function(cb) {
+			var msg = 'My-Secret: not telling\r\n\r\nNyuu breaks free again!\r\n.\r\n';
+			server.expect('POST\r\n', function() {
+				server.expect('POST\r\n', function() {
+					this.expect(msg, '240 <new-article> Article received ok');
+					this.respond('340  Send article');
+				});
+				server.drop();
+			});
+			client.post(new DummyPost(msg), cb);
+		},
+		function(a, cb) {
+			assert.equal(a, 'new-article');
+			closeTest(client, server, cb);
+		}
+	], done);
+});
+
 [false, true].forEach(function(reconn) {
 	it('should '+(reconn?'reconnect':'retry')+' on first post failure', function(done) {
 		var server, client;
