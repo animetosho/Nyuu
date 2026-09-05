@@ -35,6 +35,7 @@ servers: [
 		retryBadResp: false, // enable retrying if a bad response is received
 		postRetries: 1, // how many times to retry if server returns 441 response to posted article
 		postRetryDelay: 0, // delay post retries (above option) by this many milliseconds
+		checkBeforeRepost: true, // if the connection drops whilst an article is being uploaded, STAT the article after reconnecting and only re-post it if the server doesn't have it (otherwise a lost acknowledgement leaves a duplicate on the server under an ID the NZB never sees)
 		postFailReconnect: false, // treat post failure like a connection-level error; postRetries and postRetryDelay settings are ignored if true
 		errorTeardown: false, // false = gracefully close bad connections, true = forcefully destroy them
 		closeTimeout: 5000, // 5 seconds; wait period before forcefully dropping gracefully closed connections
