@@ -300,6 +300,33 @@ If a config file isn't specified, Nyuu will also search the `NYUU_CONFIG`
 environment variable for a default configuration (saving you from needing to
 specify this file on every run, if you set the environment up in your shell).
 
+Posting Without a Signature
+---------------------------
+
+Out of the box, four things in a Nyuu post say who made it and with what:
+
+-   the `From` header, which defaults to your login name at your machine's
+    hostname
+-   the `User-Agent` header, `Nyuu/<version>`
+-   the `Message-ID`, whose default form `<24 random chars>-<unix ms>@nyuu`
+    names the program and carries a per-article millisecond clock
+-   the `Date` header (always sent; a post needs one)
+
+None of these affect whether a post downloads, and all of them are already
+under your control. A configuration which sends none of them looks like this
+on the command line:
+
+    nyuu -H User-Agent -f 'poster <poster@example.invalid>' \
+         --message-id '${rand(32)}@${rand(12)}.invalid' ...
+
+`-H User-Agent` with no value unsets the header. In a JSON config file the
+equivalent keys are `"from"` and `"message-id"`; the `User-Agent` header can
+only be unset from the command line. Together with `--subject`, `--filename`
+and `--yenc-name` templates using `${rand(N)}`, this is everything Nyuu offers
+for a post that carries no identifying text - note that it hides the *poster*,
+not the *content*: yEnc is a reversible transform, so the payload is exactly
+as readable as it ever was.
+
 Planned Features
 ================
 
