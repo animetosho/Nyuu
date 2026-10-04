@@ -197,7 +197,7 @@ deleteRawPosts: false,
 
 // CLI UI options - these are equivalent to options in the JSON config - see help-full.txt for details
 cli: {
-	colorize: process.stderr.isTTY,
+	colorize: (process.stderr.isTTY === undefined) ? false : process.stderr.isTTY,
 	'log-level': 3, // 1=error, 2=warning (quiet), 3=info, 4=debug (verbose)
 	'log-time': false,
 	progress: null, // array of strings, describing enabled progress indicators
