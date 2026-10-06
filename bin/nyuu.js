@@ -150,6 +150,11 @@ var servOptMap = {
 		postOnly: true,
 		keyMap: 'postRetryDelay'
 	},
+	'check-before-repost': {
+		type: 'bool',
+		postOnly: true,
+		keyMap: 'checkBeforeRepost'
+	},
 	'post-fail-reconnect': {
 		type: 'bool',
 		postOnly: true,

@@ -482,6 +482,63 @@ describe('Nyuu', function() {
 	*/
 });
 
+
+// --- a lost 240: the article must not be posted twice ---
+var fs = require('fs');
+var nzbSegmentIds = function() {
+	var nzb = fs.readFileSync('output.nzb', 'utf8');
+	return (nzb.match(/<segment[^>]*>[^<]*<\/segment>/g) || []).map(function(s) {
+		return s.replace(/^.*>([^<]*)<\/segment>$/, '$1');
+	});
+};
+
+[true, false].forEach(function(checkFirst) {
+	it('should ' + (checkFirst ? 'not duplicate' : 'duplicate (control: old behaviour)') + ' an article whose 240 was lost to a dropout', function(done) {
+		var opts = {
+			server: {
+				postConnections: 1,
+				checkBeforeRepost: checkFirst,
+				requestRetries: 2
+			},
+			check: { tries: 0 }
+		};
+		(function(cb) {
+			var server = testSkel(['help.txt'], opts, function(err) {
+				if(err) return cb(err);
+				server.close(function() {
+					cb(null, server);
+				});
+			});
+			var dropped = false;
+			server.onConnect(function(conn) {
+				var orig = conn._respond;
+				conn._respond = function(code, msg) {
+					// accept the article (it is already stored), then drop the link instead of acknowledging it
+					if(code == 240 && !dropped) {
+						dropped = true;
+						conn.conn.destroy();
+						return;
+					}
+					orig.call(conn, code, msg);
+				};
+			});
+		})(function(err, server) {
+			if(err) return done(err);
+			var ids = Object.keys(server.postIdMap);
+			var segs = nzbSegmentIds();
+			if(checkFirst) {
+				assert.equal(ids.length, 1, 'exactly one article on the server');
+				assert.deepEqual(segs, ids, 'the NZB names the article the server holds');
+			} else {
+				assert.equal(ids.length, 2, 'old behaviour: the article is on the server twice');
+				assert.equal(segs.length, 1);
+				assert.notEqual(ids.indexOf(segs[0]), -1);
+			}
+			done();
+		});
+	});
+});
+
 it('complex test', function(done) {
 	doTest(['lib/', 'help.txt', {
 		name: 'emptyfile',

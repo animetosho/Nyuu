@@ -61,6 +61,14 @@ Upload Server Options:
        --post-retries        Number of post retry attempts in response to 441
                              errors (default 1)
        --post-retry-delay    Delay post retries (default 0s)
+       --check-before-repost If the connection drops whilst an article is being
+                             uploaded, STAT the article after reconnecting and
+                             only re-post it if the server does not have it.
+                             Without this, an acknowledgement lost to the
+                             dropout leaves a duplicate article on the server
+                             under a Message-ID the NZB never records. Enabled
+                             by default; use `--no-check-before-repost` on a
+                             server which refuses STAT on posting connections.
        --post-fail-reconnect Treat posting failures as connection fatal errors.
                              This causes the connection to be reestablished in
                              response to this error (flag option)
