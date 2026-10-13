@@ -16,6 +16,8 @@
 "article-size":       "700K",
 "comment":            "",
 "from":               "Snazzy Poster <me@localhost.localdomain>",
+" The default From is your login name at your hostname, and the default Message-ID names Nyuu; see 'Posting Without a Signature' in the README ":0,
+"message-id":         "${rand(32)}@${rand(12)}.invalid",
 "groups":             "alt.binaries.test, alt.binaries.boneless",
 
 " *** Check Options *** ":0,
