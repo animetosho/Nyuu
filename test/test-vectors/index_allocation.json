@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "description": "Uploader segmentIndex allocation skip vectors: a candidate index whose uint32_be encoding contains 0x0A or 0x0D is forbidden; uploaders MUST skip to the next permitted index.",
+  "vectors": [
+    {
+      "id": "index-allocation-01-skip-10",
+      "category": "index_allocation",
+      "description": "Candidate segmentIndex 10 (uint32_be 0x0000000A contains 0x0A) is forbidden; uploader assigns the next permitted index 11",
+      "candidate_index": 10,
+      "expected_assigned_index": 11,
+      "expected_index_bytes": [
+        0,
+        0,
+        0,
+        11
+      ],
+      "expected_error": null
+    },
+    {
+      "id": "index-allocation-02-skip-13",
+      "category": "index_allocation",
+      "description": "Candidate segmentIndex 13 (uint32_be 0x0000000D contains 0x0D) is forbidden; uploader assigns 14",
+      "candidate_index": 13,
+      "expected_assigned_index": 14,
+      "expected_index_bytes": [
+        0,
+        0,
+        0,
+        14
+      ],
+      "expected_error": null
+    },
+    {
+      "id": "index-allocation-03-skip-266",
+      "category": "index_allocation",
+      "description": "Candidate segmentIndex 266 (uint32_be 0x0000010A contains 0x0A) is forbidden; uploader assigns 267",
+      "candidate_index": 266,
+      "expected_assigned_index": 267,
+      "expected_index_bytes": [
+        0,
+        0,
+        1,
+        11
+      ],
+      "expected_error": null
+    },
+    {
+      "id": "index-allocation-04-skip-269",
+      "category": "index_allocation",
+      "description": "Candidate segmentIndex 269 (uint32_be 0x0000010D contains 0x0D) is itself forbidden and MUST never be assigned; uploader skips it and assigns 270",
+      "candidate_index": 269,
+      "expected_assigned_index": 270,
+      "expected_index_bytes": [
+        0,
+        0,
+        1,
+        14
+      ],
+      "expected_error": null
+    }
+  ]
+}

@@ -289,6 +289,26 @@ Usage
 For command line usage, [see here](help-full.txt), [or here](help.txt) for a
 summarized list of options.
 
+### Encryption (yEnc body & control lines)
+
+Nyuu supports experimental yEnc body and control-line encryption (v1.2).
+Article bodies are encrypted with XChaCha20-Poly1305 and control lines
+are encrypted with Radix 253 FF1. Generated NZBs include standard
+`<meta type="yenc_encrypted">true</meta>` and `<meta type="password">` tags.
+
+Heads up: encrypted uploads need a downloader that supports this too.
+People using an ordinary downloader won't be able to download them
+properly.
+
+CLI flags:
+- `--encrypt`: Enable yEnc body and control-line encryption (combined wire mode).
+- `--encrypt-password <pass>`: Specify the encryption password. Specifying this option enables encryption.
+
+Example:
+```bash
+nyuu -h news.example.com -S -u user -p <password> -o out.nzb --encrypt-password "<password>" file.mkv
+```
+
 Default Configuration
 ---------------------
 
