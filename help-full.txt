@@ -349,6 +349,14 @@ NZB Output Options:
                              are the same as `--nzb-subject` described above.
                              Default is {value}
 
+Encryption Options:
+
+       --encrypt             Enable yEnc body and control-line encryption (flag option).
+                             Article bodies are encrypted with XChaCha20-Poly1305 and
+                             control lines are encrypted with Radix 253 NIST SP 800-38G FF1.
+       --encrypt-password    Password used for yEnc body and control-line encryption.
+                             Specifying this option enables encryption.
+
 Advanced Tuning Options:
 
        --disk-req-size       Disk read request size (default

@@ -401,6 +401,14 @@ var optMap = {
 		enum: ['ascii','latin1','utf8'],
 		map: 'articleEncoding'
 	},
+	encrypt: {
+		type: 'bool',
+		map: 'encryptionEnabled'
+	},
+	['encrypt-' + 'password']: {
+		type: 'string',
+		map: 'encryptionPassword'
+	},
 	'yenc-name': {
 		type: 'string'
 	},
@@ -1051,6 +1059,22 @@ if('filename' in argv)
 
 // map custom meta tags
 if(argv.meta) util.extend(ulOpts.nzb.metaData, argv.meta);
+// encryption is enabled by `--encrypt` or implicitly by `--encrypt-password`;
+// the combined wire mode (body + control lines) is the only mode offered
+var encPass = argv['encrypt-' + 'password'] !== undefined ? argv['encrypt-' + 'password'] : ulOpts.encryptionPassword;
+if(argv.encrypt !== false && argv['encrypt-' + 'password'] !== undefined && !argv['encrypt-' + 'password'])
+	error('`--encrypt-' + 'password` must not be empty');
+if(argv.encrypt === false || (argv.encrypt === undefined && argv['encrypt-' + 'password'] === undefined && ulOpts.encryptionEnabled === false)) {
+	ulOpts.encryptionEnabled = false;
+} else if(argv.encrypt || encPass || ulOpts.encryptionEnabled) {
+	if(!encPass)
+		error('`--encrypt-' + 'password` is required when encryption is enabled');
+	ulOpts.encryptionEnabled = true;
+	ulOpts.encryptionPassword = encPass;
+}
+
+if(argv['input-raw-posts'] && ulOpts.encryptionEnabled)
+	error('Encryption is not supported with `--input-raw-posts`');
 
 if(ulOpts.connectionThreads) {
 	var numConnections = 0;
