@@ -2448,6 +2448,33 @@ it('should handle requests after a fatal post-upload failure', function(done) {
 	], done);
 });
 
+it('should handle disconnect before TLS handshake', function(done) {
+	// https://github.com/animetosho/Nyuu/issues/151
+	var server, client;
+	waterfall([
+		killServer,
+		function(cb) {
+			var _server = new TestServer(function() {
+				server.drop(); // drop before TLS handshake
+			});
+			_server.listen(0, function() {
+				cb(null, _server, newNNTP({connectRetries: 0, secure: true}));
+			});
+			currentServer = _server;
+		},
+		function(_server, _client, cb) {
+			server = _server;
+			client = _client;
+			client.connect(function(err) {
+				assert(err);
+				cb();
+			});
+		}, function(cb) {
+			closeTest(client, server, cb);
+		}
+	], done);
+});
+
 it('should deal with a connection drop after receiving partial data');
 it('should deal with the case of newlines being split across packets'); // or in unfortunate positions
 
